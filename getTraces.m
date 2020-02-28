@@ -16,7 +16,7 @@ for i = 1:num_particles
         pixel_trace = gpu_vid(row(c),col(c),:,:,:);
         to_avg(c,:,:) = gather(pixel_trace);
     end
-
+    
     intensity = mean(to_avg,1);
     traces(i,:,:) = intensity;
 end
