@@ -51,7 +51,8 @@ for f=1:length(pathlist)
     % mip that filters for pixels with 5 or more frames
     s = cast(sum(opened,5),'single');
     tokeep = s > signal_count_limit;
-    processed{f,3} = cast(max(opened .* tokeep,[],5), 'single');
+    %processed{f,3} = cast(max(opened .* tokeep,[],5), 'single');
+    processed{f,3} = tokeep;
     clear('opened');
     
     disp(['Done with ', pathlist{f}]);

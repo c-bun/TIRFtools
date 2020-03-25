@@ -1,4 +1,4 @@
-function traces = getTracesMax(vid_to_use, mask_to_use)
+function traces = getTracesSum(vid_to_use, mask_to_use)
 % get traces for each channel from a specified mask.
 % Get trace information for each particle found
 % this is not written scalably. will probably break with larger files.
@@ -17,7 +17,7 @@ for i = 1:num_particles
         to_avg(c,:,:) = gather(pixel_trace);
     end
     
-    intensity = max(to_avg,[],1);
+    intensity = sum(to_avg,1);
     traces(i,:,:) = intensity;
 end
 

@@ -1,4 +1,4 @@
-function LoGMask(processed, LoG_thresholds, LoG_sigmas,  structuring_element, signal_count_limit)
+function p = LoGMask(processed, LoG_thresholds, LoG_sigmas,  structuring_element, signal_count_limit, size_range)
 % Function for testing various LoG parameters without having to import ND2
 % files each time.
 
@@ -12,30 +12,50 @@ end
 if size(signal_count_limit,1) == 0
     signal_count_limit = 5;
 end
+if size(size_range,1) == 0
+    size_range = [5 30];
+end
 
 for f=1:size(processed,1)
 
-% Log and find mask
-log = HIP.LoG(processed{f,2}, LoG_sigmas,[]);
+% This doesn't really need to run every time, but I'm doing it because I'm
+% not storing the log in the previous processND2 function
+% Log
+% log = HIP.LoG(processed{f,2}, LoG_sigmas,[]);
+[x, y, z, c, t] = size(processed{f,2});
+rs = reshape(processed{f,2}, x, y, c, z, t);
+log = HIP.LoG(rs,LoG_sigmas,[]);
+log = reshape(log, x, y, z, c, t);
 
 % mask each channel individually
-mask = NaN(size(log));
+mask = NaN(size(log),'single');
 for c = 1:size(log,4)
     mask(:,:,:,c,:) = log(:,:,:,c,:) < LoG_thresholds(c);
 end
 openInIJ(log,1:50);
 openInIJ(mask,1:50);
-clear('log');
+clear('log', 'rs');
 
 % morphological opening on mask
 kernel = strel("disk",1,4);
 opened = HIP.Opener(mask, structuring_element,1,[]);
 clear('mask');
 
-% mip that filters for pixels with 5 or more frames
-s = cast(sum(opened,5),'single');
+% mip that filters for pixels with x or more frames
+s = sum(opened,5);
 tokeep = s > signal_count_limit;
-processed{f,3} = cast(max(opened .* tokeep,[],5), 'single');
+
+% I'm not sure why I had this line...
+%processed{f,3} = cast(max(opened .* tokeep,[],5), 'single');
+% Just use toKeep as the processed image?
+
+%do size filtration here (moved from findOverlap function)
+img1_sf = bwpropfilt(squeeze(tokeep(:,:,1,1)),'area',size_range);
+img2_sf = bwpropfilt(squeeze(tokeep(:,:,1,2)),'area',size_range);
+
+processed{f,3} = cat(4,img1_sf,img2_sf);
+
 clear('opened');
 end
+p = processed;
 end

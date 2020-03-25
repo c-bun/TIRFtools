@@ -1,16 +1,17 @@
 function overlap = findOverlap(img1, img2, view_in_IJ, size_range, overlap_percent)
-if size(size_range,1) == 0
-    size_range = [5 30];
-end
+% if size(size_range,1) == 0
+%     size_range = [5 30];
+% end
 if size(overlap_percent,1) == 0
     overlap_percent = 0.5;
 end
 
-% filter by size first
-img1_sf = bwpropfilt(cast(img1,'logical'),'area',size_range);
-img2_sf = bwpropfilt(cast(img2,'logical'),'area',size_range);
+% % filter by size first
+% img1_sf = bwpropfilt(cast(img1,'logical'),'area',size_range);
+% img2_sf = bwpropfilt(cast(img2,'logical'),'area',size_range);
 
-ampersand = img1_sf & img2_sf;
+%ampersand = img1_sf & img2_sf;
+ampersand = img1 & img2;
 
 %filtered_sm = bwpropfilt(ampersand,'area',size_range);
 filtered_sm = ampersand;
@@ -46,9 +47,10 @@ end
 
 if view_in_IJ
     img = NaN([size(ampersand),6]);
-    img(:,:,5) = ampersand;
-    img(:,:,6) = ampersand_filtered;
-    img(:,:,1:4) = cat(3,img1,img1_sf,img2,img2_sf);
+    img(:,:,3) = ampersand;
+    img(:,:,4) = ampersand_filtered;
+    %     img(:,:,1:4) = cat(3,img1,img1_sf,img2,img2_sf);
+    img(:,:,1:2) = cat(3,img1,img2);
     openInIJ(cast(img,'single'),1);
 end
 
