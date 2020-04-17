@@ -1,4 +1,4 @@
-function pathlist = getPathlist
+function pathlist = getFileList
 [names, path] = uigetfile('*.nd2', 'Select some nd2 files.', 'MultiSelect', 'on');
 pathlist = {};
 for n=1:length(names)
