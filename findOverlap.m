@@ -1,25 +1,20 @@
-function overlap = findOverlap(img1, img2, view_in_IJ, size_range, overlap_percent)
-% if size(size_range,1) == 0
-%     size_range = [5 30];
-% end
+function [overlap, counts] = findOverlap(img1, img2, view_in_IJ, overlap_percent)
+
 if size(overlap_percent,1) == 0
     overlap_percent = 0.5;
 end
 
-% % filter by size first
-% img1_sf = bwpropfilt(cast(img1,'logical'),'area',size_range);
-% img2_sf = bwpropfilt(cast(img2,'logical'),'area',size_range);
-
-%ampersand = img1_sf & img2_sf;
 ampersand = img1 & img2;
 
-%filtered_sm = bwpropfilt(ampersand,'area',size_range);
 filtered_sm = ampersand;
 
 labeled_ampersand = bwlabel(filtered_sm);
 particle_count = max(max(labeled_ampersand));
 labeled_img1 = bwlabel(img1);
 labeled_img2 = bwlabel(img2);
+
+count_img1 = max(labeled_img1,[],'all');
+count_img2 = max(labeled_img2,[],'all');
 
 ampersand_filtered = filtered_sm;
 
@@ -46,13 +41,15 @@ for p=1:particle_count
 end
 
 if view_in_IJ
-    img = NaN([size(ampersand),6]);
+    img = NaN([size(ampersand),4]);
     img(:,:,3) = ampersand;
     img(:,:,4) = ampersand_filtered;
-    %     img(:,:,1:4) = cat(3,img1,img1_sf,img2,img2_sf);
     img(:,:,1:2) = cat(3,img1,img2);
     openInIJ(cast(img,'single'),1);
 end
 
+count_ampersand_filtered = max(bwlabel(ampersand_filtered),[],'all');
+
 overlap = ampersand_filtered;
+counts = [count_img1 count_img2 count_ampersand_filtered];
 end

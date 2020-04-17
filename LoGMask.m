@@ -33,7 +33,7 @@ for c = 1:size(log,4)
     mask(:,:,:,c,:) = log(:,:,:,c,:) < LoG_thresholds(c);
 end
 openInIJ(log,1:50);
-openInIJ(mask,1:50);
+%openInIJ(mask,1:50); %changed this to open the final video
 clear('log', 'rs');
 
 % morphological opening on mask
@@ -50,12 +50,20 @@ tokeep = s > signal_count_limit;
 % Just use toKeep as the processed image?
 
 %do size filtration here (moved from findOverlap function)
-img1_sf = bwpropfilt(squeeze(tokeep(:,:,1,1)),'area',size_range);
-img2_sf = bwpropfilt(squeeze(tokeep(:,:,1,2)),'area',size_range);
+img_sf = NaN(size(tokeep), 'single');
+for c = 1:size(tokeep, 4)
+    sf = bwpropfilt(squeeze(tokeep(:,:,1,c)),'area',size_range);
+    img_sf(:,:,:,c) = sf;
+end
+%img1_sf = bwpropfilt(squeeze(tokeep(:,:,1,1)),'area',size_range);
+%img2_sf = bwpropfilt(squeeze(tokeep(:,:,1,2)),'area',size_range);
 
-processed{f,3} = cat(4,img1_sf,img2_sf);
-
+%processed{f,3} = cat(4,img1_sf,img2_sf);
+processed{f,3} = img_sf;
 clear('opened');
+
+
+openInIJ(cast(processed{f,3}, 'single'),1:1);
 end
 p = processed;
 end
