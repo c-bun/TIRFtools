@@ -1,4 +1,6 @@
 function [overlap, counts] = findOverlap(img1, img2, view_in_IJ, overlap_percent)
+% findOverlap is a utility function called in batchFindOverlap. The user
+% will usually not use this.
 
 if size(overlap_percent,1) == 0
     overlap_percent = 0.5;

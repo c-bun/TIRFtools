@@ -1,4 +1,20 @@
 function p = batchFindOverlap(processed, chA, chB, view_in_IJ, overlap_percent)
+% batchFindOverlap takes processed videos with accompanying masks and
+% determined overlap in signal between the two specified channels.
+%
+%   PARAMETERS:
+%
+%   processed: cell array of processed videos
+%
+%   chA: first channel to compare. Provide index as an integer.
+%
+%   chB: second channel to compare.
+%
+%   view_in_IJ: specify true or false if want to open the result in imageJ.
+%
+%   overlap_percent: percent overlap to require for spots to count as
+%   overlapping.
+%
 for i = 1:size(processed,1)
     img1 = processed{i,3}(:,:,:,chA);
     img2 = processed{i,3}(:,:,:,chB);

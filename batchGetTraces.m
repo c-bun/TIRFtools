@@ -1,7 +1,15 @@
 function traces_out = batchGetTraces(processed, smoothing)
-% There's gotta be a better way to write this. The indexing was a
-% nightmare.
-%traces = NaN(1000,size(processed{1,2},4),size(processed{1,2},5));
+% batchGetTraces finds the intensity traces across each spot as specified in the
+% mask.
+%
+%   PARAMETERS:
+%
+%   processed: cell array of background subtracted video with associated
+%   masks.
+%
+%   smoothing: smoothing window width to use on traces via a moving mean.
+%
+
 traces = NaN(1000,size(processed{1,2},4),1000);
 first = true;
 t=0;
@@ -22,7 +30,7 @@ for i = 1:size(processed,1)
         t = t2+1;
     end
 end
-%traces = rmmissing(traces,1);
+
 traces = traces(1:t2,:,:);
 traces_out = smoothdata(traces,3,'movmean',smoothing);
 end

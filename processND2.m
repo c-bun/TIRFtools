@@ -7,7 +7,16 @@ function processed = processND2(pathlist, high_pass_sigmas)
 %   The video is read in as a 5D array: [x, y, z, c, t]
 %
 %   Requires HIP from Janielia AIC. This also uses bfopen from the
-%   bioformat reader.
+%   bioformat reader. bfmatlab should be in your MATLAB folder in
+%   Documents.
+%
+%   PARAMETERS:
+%
+%   pathlist: list of full paths to ND2 files as a cell array.
+%
+%   high_pass_sigmas: sigma for gaussian blurring. Usually set at 10 to 50
+%   for background subtraction.
+%
 
 
 if size(high_pass_sigmas,1) == 0
