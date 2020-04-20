@@ -1,6 +1,30 @@
-function p = LoGMask(processed, LoG_thresholds, LoG_sigmas,  structuring_element, signal_count_limit, size_range)
-% Function for testing various LoG parameters without having to import ND2
-% files each time.
+function p = LoGMask(processed, LoG_sigmas,  structuring_element, LoG_thresholds, signal_count_limit, size_range, display_in_IJ)
+% LoGMask applies a Laplacian of Gaussian filter to the inputted videos and
+%   thresholds the result. Further filtering narrows particles by the
+%   number of frames they appear in and size.
+%   
+%   PARAMETERS:
+%
+%   processed: cell array of videos produced from processND2 function.
+%   
+%   LoG_sigmas: sigma to use for LoG filter. Expects an array for each
+%   element, [x, y, z]
+%
+%   structuring element: structuring element for gaussian filter. Use '[]'
+%   for matlab's default "disk".
+%
+%   LoG_thresholds: value for thresholding LoGed result. Probably will have
+%   to tweak this a few times to find the correct value. This is usually
+%   around -100 to -300. Provide one per channel in the video as an array.
+%
+%   signal_count_limit: threshold for number of times that a pixel must
+%   appear in the masked video (across time) to remain in the final
+%   projection. This gets rid of pixels that blink once or twice but do not
+%   give sustained (real) signal.
+%
+%   size_range: area range of pixels to be counted as a "real" spot. Set as
+%   an array of two values. Default is [5 30] or areas ranging from 5 to 30
+%   pixels.
 
 if size(LoG_sigmas,1) == 0
     LoG_sigmas = [2 2 0];
@@ -18,10 +42,7 @@ end
 
 for f=1:size(processed,1)
 
-% This doesn't really need to run every time, but I'm doing it because I'm
-% not storing the log in the previous processND2 function
-% Log
-% log = HIP.LoG(processed{f,2}, LoG_sigmas,[]);
+% LoG filter
 [x, y, z, c, t] = size(processed{f,2});
 rs = reshape(processed{f,2}, x, y, c, z, t);
 log = HIP.LoG(rs,LoG_sigmas,[]);
@@ -32,8 +53,10 @@ mask = NaN(size(log),'single');
 for c = 1:size(log,4)
     mask(:,:,:,c,:) = log(:,:,:,c,:) < LoG_thresholds(c);
 end
-openInIJ(log,1:50);
-%openInIJ(mask,1:50); %changed this to open the final video
+if display_in_IJ
+    openInIJ(log,1:50);
+end
+
 clear('log', 'rs');
 
 % morphological opening on mask
@@ -62,8 +85,9 @@ end
 processed{f,3} = img_sf;
 clear('opened');
 
-
-openInIJ(cast(processed{f,3}, 'single'),1:1);
+if display_in_IJ
+    openInIJ(cast(processed{f,3}, 'single'),1:1);
+end
 end
 p = processed;
 end
