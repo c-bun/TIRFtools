@@ -1,6 +1,9 @@
 function p = batchFindOverlap(processed, chA, chB, view_in_IJ, overlap_percent)
 % batchFindOverlap takes processed videos with accompanying masks and
-% determined overlap in signal between the two specified channels.
+% determined overlap in signal between the two specified channels. Also
+% outputs counts of spots in each inputted channel (A and B respectively),
+% as well as the number of spots that overlap. This can be used as a crude
+% way to estimate occupancy when comparing to a negative control.
 %
 %   PARAMETERS:
 %
