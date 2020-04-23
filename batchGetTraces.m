@@ -10,7 +10,19 @@ function traces_out = batchGetTraces(processed, smoothing)
 %   smoothing: smoothing window width to use on traces via a moving mean.
 %
 
-traces = NaN(1000,size(processed{1,2},4),1000);
+%figure out how big the matrix will need to be for the traces
+maxw = 0;
+height = 0;
+for c = 1:size(processed,1)
+    w = size(processed{c,2}, 5);
+    spots = processed{c,5}(3);
+    height = height+spots;
+    if w > maxw
+        maxw = w;
+    end
+end
+
+traces = NaN(height,size(processed{1,2},4),maxw);
 first = true;
 t=0;
 t2=0;
@@ -31,6 +43,5 @@ for i = 1:size(processed,1)
     end
 end
 
-traces = traces(1:t2,:,:);
 traces_out = smoothdata(traces,3,'movmean',smoothing);
 end
