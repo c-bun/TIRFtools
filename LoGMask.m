@@ -1,4 +1,4 @@
-function p = LoGMask(processed, LoG_sigmas, LoG_thresholds, structuring_element, signal_count_limit, size_range, display_in_IJ)
+function p = LoGMask(processed, LoG_sigmas, LoG_thresholds, structuring_element, signal_count_limit, size_range, framerange, display_in_IJ)
 % LoGMask applies a Laplacian of Gaussian filter to the inputted videos and
 %   thresholds the result. Further filtering narrows particles by the
 %   number of frames they appear in and size.
@@ -26,6 +26,9 @@ function p = LoGMask(processed, LoG_sigmas, LoG_thresholds, structuring_element,
 %   an array of two values. Default is [5 30] or areas ranging from 5 to 30
 %   pixels.
 
+%store the first two columns in the answer
+p(:,1:2) = processed(:,1:2);
+
 if size(LoG_sigmas,1) == 0
     LoG_sigmas = [2 2 0];
 end
@@ -38,6 +41,13 @@ if size(signal_count_limit,1) == 0
 end
 if size(size_range,1) == 0
     size_range = [5 30];
+end
+
+% if running on a subset of frames, trim videos first
+if size(framerange,1) ~= 0
+    for v=1:size(processed,1)
+        processed{v,2} = processed{v,2}(:,:,:,:,framerange);
+    end
 end
 
 for f=1:size(processed,1)
@@ -81,5 +91,5 @@ for f=1:size(processed,1)
         openInIJ(cast(processed{f,3}, 'single'),1:1);
     end
 end
-p = processed;
+p(:,3) = processed(:,3);
 end
